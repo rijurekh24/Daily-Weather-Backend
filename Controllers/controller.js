@@ -87,7 +87,6 @@ const aggregateWeatherData = async () => {
 
     const today = new Date().toISOString().split("T")[0];
 
-    // Check for alerts
     if (maxTemp > tempLimit) {
       alerts.push(
         `ALERT: ${city} has exceeded the temperature threshold: ${maxTemp}°C`
@@ -117,14 +116,14 @@ const aggregateWeatherData = async () => {
   }
 
   console.log("Weather data aggregation completed.");
-  return alerts; // Return alerts
+  return alerts;
 };
 
 const weather = async (req, res) => {
   try {
     await fetchWeatherData();
-    const alerts = await aggregateWeatherData(); // Get alerts from aggregation
-    res.json({ weatherData: weatherDataArray, alerts }); // Include alerts in response
+    const alerts = await aggregateWeatherData();
+    res.json({ weatherData: weatherDataArray, alerts });
   } catch (error) {
     console.error("Error fetching weather data:", error);
     res.status(500).json({ message: "Internal Server Error" });
