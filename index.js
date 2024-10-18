@@ -32,6 +32,7 @@ const DailyWeatherSummary = mongoose.model(
     averageTemp: Number,
     maxTemp: Number,
     minTemp: Number,
+    feelsLike: Number,
     dominantCondition: String,
   })
 );
@@ -67,6 +68,7 @@ const fetchWeatherData = async () => {
       const data = response.data;
 
       const tempCelsius = (data.main.temp - 273.15).toFixed(2);
+      const feelsLikeCelsius = (data.main.feels_like - 273.15).toFixed(2);
       const weatherCondition = data.weather[0].main;
       const timestamp = data.dt * 1000;
       const date = new Date(timestamp).toISOString().split("T")[0];
@@ -75,6 +77,7 @@ const fetchWeatherData = async () => {
       weatherDataArray.push({
         date,
         temp: tempCelsius,
+        feelsLike: feelsLikeCelsius,
         condition: weatherCondition,
         city: cityName,
       });
@@ -91,11 +94,12 @@ const aggregateWeatherData = async () => {
   const summary = {};
   console.log("Aggregating weather data...");
 
-  weatherDataArray.forEach(({ date, temp, city }) => {
+  weatherDataArray.forEach(({ date, temp, feelsLike, city }) => {
     if (!summary[city]) {
       summary[city] = {
         date,
         totalTemp: 0,
+        totalFeelsLike: 0,
         count: 0,
         maxTemp: Number.MIN_VALUE,
         minTemp: Number.MAX_VALUE,
@@ -103,17 +107,20 @@ const aggregateWeatherData = async () => {
     }
 
     summary[city].totalTemp += parseFloat(temp);
+    summary[city].totalFeelsLike += parseFloat(feelsLike);
     summary[city].count++;
     summary[city].maxTemp = Math.max(summary[city].maxTemp, parseFloat(temp));
     summary[city].minTemp = Math.min(summary[city].minTemp, parseFloat(temp));
   });
 
   for (const city in summary) {
-    const { date, totalTemp, count, maxTemp, minTemp } = summary[city];
+    const { date, totalTemp, totalFeelsLike, count, maxTemp, minTemp } =
+      summary[city];
     const averageTemp = totalTemp / count;
+    const averageFeelsLike = totalFeelsLike / count;
 
     console.log(
-      `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Max: ${maxTemp}, Min: ${minTemp}`
+      `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Avg Feels Like: ${averageFeelsLike}, Max: ${maxTemp}, Min: ${minTemp}`
     );
 
     const today = new Date().toISOString().split("T")[0];
@@ -122,7 +129,7 @@ const aggregateWeatherData = async () => {
       if (date === today) {
         await DailyWeatherSummary.findOneAndUpdate(
           { city, date },
-          { averageTemp, maxTemp, minTemp },
+          { averageTemp, maxTemp, minTemp, feelsLike: averageFeelsLike },
           { new: true, upsert: true }
         );
       } else {
@@ -132,6 +139,7 @@ const aggregateWeatherData = async () => {
           averageTemp,
           maxTemp,
           minTemp,
+          feelsLike: averageFeelsLike, // Store average feels like
         });
       }
     } catch (error) {
