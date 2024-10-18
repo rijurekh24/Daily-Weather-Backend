@@ -24,17 +24,6 @@ mongoose
     console.log("Failed to connect to MongoDB");
   });
 
-// const WeatherData = mongoose.model(
-//   "WeatherData",
-//   new mongoose.Schema({
-//     date: String,
-//     temp: Number,
-//     condition: String,
-//     city: String,
-//     feels_like: Number,
-//   })
-// );
-
 const DailyWeatherSummary = mongoose.model(
   "DailyWeatherSummary",
   new mongoose.Schema({
@@ -47,17 +36,14 @@ const DailyWeatherSummary = mongoose.model(
   })
 );
 
-const UserPreferences = mongoose.model(
-  "UserPreferences",
+const Threshold = mongoose.model(
+  "Threshold",
   new mongoose.Schema({
-    userId: String,
-    tempThreshold: Number,
-    conditionThreshold: String,
+    value: Number,
   })
 );
 
 let weatherDataArray = [];
-let lastWeatherData = {};
 let alertCounts = {};
 
 const fetchWeatherData = async () => {
@@ -81,22 +67,16 @@ const fetchWeatherData = async () => {
       const data = response.data;
 
       const tempCelsius = (data.main.temp - 273.15).toFixed(2);
-      const feels_like = (data.main.feels_like - 273.15).toFixed(2);
       const weatherCondition = data.weather[0].main;
       const timestamp = data.dt * 1000;
       const date = new Date(timestamp).toISOString().split("T")[0];
       const cityName = data.name;
-
-      console.log(
-        `City: ${city}, Temp: ${tempCelsius}, Condition: ${weatherCondition}, Date: ${date}`
-      );
 
       weatherDataArray.push({
         date,
         temp: tempCelsius,
         condition: weatherCondition,
         city: cityName,
-        feels_like,
       });
     } catch (error) {
       console.error(`Error fetching data for ${city}:`, error);
@@ -109,8 +89,9 @@ const fetchWeatherData = async () => {
 
 const aggregateWeatherData = async () => {
   const summary = {};
+  console.log("Aggregating weather data...");
 
-  weatherDataArray.forEach(({ date, temp, condition, city }) => {
+  weatherDataArray.forEach(({ date, temp, city }) => {
     if (!summary[city]) {
       summary[city] = {
         date,
@@ -118,7 +99,6 @@ const aggregateWeatherData = async () => {
         count: 0,
         maxTemp: Number.MIN_VALUE,
         minTemp: Number.MAX_VALUE,
-        conditions: {},
       };
     }
 
@@ -126,32 +106,48 @@ const aggregateWeatherData = async () => {
     summary[city].count++;
     summary[city].maxTemp = Math.max(summary[city].maxTemp, parseFloat(temp));
     summary[city].minTemp = Math.min(summary[city].minTemp, parseFloat(temp));
-    summary[city].conditions[condition] =
-      (summary[city].conditions[condition] || 0) + 1;
   });
 
   for (const city in summary) {
-    const { date, totalTemp, count, maxTemp, minTemp, conditions } =
-      summary[city];
+    const { date, totalTemp, count, maxTemp, minTemp } = summary[city];
     const averageTemp = totalTemp / count;
-    const dominantCondition = Object.keys(conditions).reduce((a, b) =>
-      conditions[a] > conditions[b] ? a : b
+
+    console.log(
+      `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Max: ${maxTemp}, Min: ${minTemp}`
     );
 
-    await DailyWeatherSummary.findOneAndUpdate(
-      { city, date },
-      { averageTemp, maxTemp, minTemp, dominantCondition },
-      { upsert: true, new: true }
-    );
+    const today = new Date().toISOString().split("T")[0];
+
+    try {
+      if (date === today) {
+        await DailyWeatherSummary.findOneAndUpdate(
+          { city, date },
+          { averageTemp, maxTemp, minTemp },
+          { new: true, upsert: true }
+        );
+      } else {
+        await DailyWeatherSummary.create({
+          city,
+          date,
+          averageTemp,
+          maxTemp,
+          minTemp,
+        });
+      }
+    } catch (error) {
+      console.error("Error saving weather summary:", error);
+    }
   }
+
+  console.log("Weather data aggregation completed.");
 };
 
 const checkAlerts = async (weatherData) => {
+  const thresholdDoc = await Threshold.findOne();
+  const tempLimit = thresholdDoc ? thresholdDoc.value : 35;
+
   for (const data of weatherData) {
     const { temp, city } = data;
-
-    const userPref = await UserPreferences.findOne({ userId: city });
-    const tempLimit = userPref ? userPref.tempThreshold : 35;
 
     if (temp > tempLimit) {
       if (alertCounts[city]) {
@@ -169,12 +165,10 @@ const checkAlerts = async (weatherData) => {
     } else {
       alertCounts[city] = { count: 0 };
     }
-
-    lastWeatherData[city] = { temp };
   }
 };
 
-setInterval(fetchWeatherData, 100000000);
+setInterval(fetchWeatherData, 300000);
 
 app.get("/api/weather", async (req, res) => {
   try {
@@ -188,24 +182,46 @@ app.get("/api/weather", async (req, res) => {
   }
 });
 
-app.post("/api/preferences", async (req, res) => {
-  const { userId, tempThreshold } = req.body;
-
-  const preferences = await UserPreferences.findOneAndUpdate(
-    { userId },
-    { tempThreshold },
-    { new: true, upsert: true }
-  );
-
-  res.json(preferences);
-});
-
 app.get("/api/daily-summaries", async (req, res) => {
   try {
+    console.log("Fetching daily summaries...");
     const summaries = await DailyWeatherSummary.find();
+    console.log("Daily summaries fetched:", summaries);
     res.json(summaries);
   } catch (error) {
     console.error("Error fetching daily summaries:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.get("/api/threshold", async (req, res) => {
+  try {
+    const threshold = await Threshold.findOne();
+    res.json(threshold || { value: 35 });
+  } catch (error) {
+    console.error("Error fetching threshold:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.post("/api/threshold", async (req, res) => {
+  const { value } = req.body;
+
+  if (typeof value !== "number") {
+    return res.status(400).json({ message: "Invalid threshold value" });
+  }
+
+  try {
+    const existingThreshold = await Threshold.findOne();
+    if (existingThreshold) {
+      existingThreshold.value = value;
+      await existingThreshold.save();
+    } else {
+      await Threshold.create({ value });
+    }
+    res.json({ message: "Threshold updated successfully" });
+  } catch (error) {
+    console.error("Error updating threshold:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
