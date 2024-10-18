@@ -10,6 +10,8 @@ This is the backend service for a weather application that fetches weather data 
   - Maximum temperature
   - Minimum temperature
   - Dominant weather condition
+  - Aggregated Humidity (Bonus)
+  - Aggregated Wind speed (BONUS)
 - User-configurable temperature thresholds for alerting.
 - Console logging for alerts when temperature thresholds are exceeded.
 - Data storage in MongoDB for persistence.
@@ -35,4 +37,6 @@ This is the backend service for a weather application that fetches weather data 
 
 5. **Access the API:**
  ```http://localhost:5000/api/weather```
+ ```http://localhost:5000/api/threshold```
+ ```http://localhost:5000/api/daily-summaries```
 
