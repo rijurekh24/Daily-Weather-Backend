@@ -13,7 +13,7 @@ const fetchWeatherData = async () => {
     "kolkata",
     "hyderabad",
   ];
-  const apiKey = "d37d5a43bf5f376549f1ad7efefbe030";
+  const apiKey = "d37d5a43bf5f376549f1ad7efefbe030"; // my api key
 
   weatherDataArray = [];
 
