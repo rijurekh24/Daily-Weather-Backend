@@ -4,84 +4,71 @@ import axios from "axios";
 
 let weatherDataArray = [];
 
-const fetchWeatherData = async () => {
-  const cities = [
-    "delhi",
-    "mumbai",
-    "chennai",
-    "bangalore",
-    "kolkata",
-    "hyderabad",
-  ];
-  const apiKey = "d37d5a43bf5f376549f1ad7efefbe030"; // my api key
-
-  weatherDataArray = [];
-
-  const fetchPromises = cities.map(async (city) => {
-    try {
-      const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`
-      );
-      const data = response.data;
-
-      const tempCelsius = (data.main.temp - 273.15).toFixed(2);
-      const feelsLikeCelsius = (data.main.feels_like - 273.15).toFixed(2);
-      const weatherCondition = data.weather[0].main;
-      const timestamp = data.dt * 1000;
-      const date = new Date(timestamp).toISOString().split("T")[0];
-      const cityName = data.name;
-
-      weatherDataArray.push({
-        date,
-        temp: tempCelsius,
-        feelsLike: feelsLikeCelsius,
-        condition: weatherCondition,
-        city: cityName,
-      });
-    } catch (error) {
-      console.error(`Error fetching data for ${city}:`, error);
-    }
-  });
-
-  await Promise.all(fetchPromises);
-  console.log("Weather Data Array:", weatherDataArray);
-};
-
 const aggregateWeatherData = async () => {
   const summary = {};
   console.log("Aggregating weather data...");
 
-  weatherDataArray.forEach(({ date, temp, feelsLike, city }) => {
-    if (!summary[city]) {
-      summary[city] = {
-        date,
-        totalTemp: 0,
-        totalFeelsLike: 0,
-        count: 0,
-        maxTemp: Number.MIN_VALUE,
-        minTemp: Number.MAX_VALUE,
-      };
-    }
+  weatherDataArray.forEach(
+    ({ date, temp, feelsLike, condition, city, windSpeed, humidity }) => {
+      if (!summary[city]) {
+        summary[city] = {
+          date,
+          totalTemp: 0,
+          totalFeelsLike: 0,
+          totalWindSpeed: 0,
+          totalHumidity: 0,
+          count: 0,
+          maxTemp: Number.MIN_VALUE,
+          minTemp: Number.MAX_VALUE,
+          conditions: {},
+        };
+      }
 
-    summary[city].totalTemp += parseFloat(temp);
-    summary[city].totalFeelsLike += parseFloat(feelsLike);
-    summary[city].count++;
-    summary[city].maxTemp = Math.max(summary[city].maxTemp, parseFloat(temp));
-    summary[city].minTemp = Math.min(summary[city].minTemp, parseFloat(temp));
-  });
+      summary[city].totalTemp += parseFloat(temp);
+      summary[city].totalFeelsLike += parseFloat(feelsLike);
+      summary[city].totalWindSpeed += parseFloat(windSpeed);
+      summary[city].totalHumidity += parseFloat(humidity);
+      summary[city].count++;
+      summary[city].maxTemp = Math.max(summary[city].maxTemp, parseFloat(temp));
+      summary[city].minTemp = Math.min(summary[city].minTemp, parseFloat(temp));
+
+      if (!summary[city].conditions[condition]) {
+        summary[city].conditions[condition] = 0;
+      }
+      summary[city].conditions[condition]++;
+    }
+  );
 
   const alerts = [];
+  console.time("Find Threshold");
   const threshold = await Threshold.findOne();
+  console.timeEnd("Find Threshold");
   const alertThreshold = threshold ? threshold.value : 35;
 
   for (const city in summary) {
-    const { date, totalTemp, totalFeelsLike, count, maxTemp, minTemp } =
-      summary[city];
+    const {
+      date,
+      totalTemp,
+      totalFeelsLike,
+      totalWindSpeed,
+      totalHumidity,
+      count,
+      maxTemp,
+      minTemp,
+      conditions,
+    } = summary[city];
+
     const averageTemp = totalTemp / count;
     const averageFeelsLike = totalFeelsLike / count;
+    const averageWindSpeed = totalWindSpeed / count;
+    const averageHumidity = totalHumidity / count;
+
+    const dominantCondition = Object.keys(conditions).reduce((a, b) =>
+      conditions[a] > conditions[b] ? a : b
+    );
 
     console.log(
-      `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Max: ${maxTemp}, Min: ${minTemp}`
+      `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Max: ${maxTemp}, Min: ${minTemp}, Dominant Condition: ${dominantCondition}, Avg Wind Speed: ${averageWindSpeed}, Avg Humidity: ${averageHumidity}`
     );
 
     if (averageTemp > alertThreshold) {
@@ -98,6 +85,9 @@ const aggregateWeatherData = async () => {
           maxTemp,
           minTemp,
           feelsLike: averageFeelsLike,
+          dominantCondition,
+          averageWindSpeed,
+          averageHumidity,
         },
         { new: true, upsert: true }
       );
@@ -107,14 +97,61 @@ const aggregateWeatherData = async () => {
   }
 
   console.log("Weather data aggregation completed.");
-  return alerts;
+  return { alerts, summary };
+};
+
+const fetchWeatherData = async () => {
+  const cities = [
+    "delhi",
+    "mumbai",
+    "chennai",
+    "bangalore",
+    "kolkata",
+    "hyderabad",
+  ];
+  const apiKey = "d37d5a43bf5f376549f1ad7efefbe030";
+
+  weatherDataArray = [];
+
+  const fetchPromises = cities.map(async (city) => {
+    try {
+      const response = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`
+      );
+      const data = response.data;
+
+      const tempCelsius = (data.main.temp - 273.15).toFixed(2);
+      const feelsLikeCelsius = (data.main.feels_like - 273.15).toFixed(2);
+      const windSpeed = data.wind.speed;
+      const humidity = data.main.humidity;
+      const weatherCondition = data.weather[0].main;
+      const timestamp = data.dt * 1000;
+      const date = new Date(timestamp).toISOString().split("T")[0];
+      const cityName = data.name;
+
+      weatherDataArray.push({
+        date,
+        temp: tempCelsius,
+        feelsLike: feelsLikeCelsius,
+        condition: weatherCondition,
+        city: cityName,
+        windSpeed,
+        humidity,
+      });
+    } catch (error) {
+      console.error(`Error fetching data for ${city}:`, error);
+    }
+  });
+
+  await Promise.all(fetchPromises);
+  console.log("Weather Data Array:", weatherDataArray);
 };
 
 const weather = async (req, res) => {
   try {
     await fetchWeatherData();
-    const alerts = await aggregateWeatherData();
-    res.json({ weatherData: weatherDataArray, alerts });
+    const { alerts, summary } = await aggregateWeatherData();
+    res.json({ weatherData: weatherDataArray, alerts, summary });
   } catch (error) {
     console.error("Error fetching weather data:", error);
     res.status(500).json({ message: "Internal Server Error" });
