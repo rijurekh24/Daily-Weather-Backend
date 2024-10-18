@@ -36,7 +36,7 @@ This is the backend service for a weather application that fetches weather data 
    ```npm start```
 
 5. **Access the API:**
- ```http://localhost:5000/api/weather```
- ```http://localhost:5000/api/threshold```
- ```http://localhost:5000/api/daily-summaries```
+ ```http://localhost:5000/api/weather``` ```https://daily-weather-backend.onrender.com/api/weather```
+ ```http://localhost:5000/api/threshold``` ```https://daily-weather-backend.onrender.com/api/threshold```
+ ```http://localhost:5000/api/daily-summaries```  ```https://daily-weather-backend.onrender.com/api/daily-summaries```
 
