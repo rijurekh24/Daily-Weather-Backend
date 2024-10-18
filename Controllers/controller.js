@@ -40,9 +40,8 @@ const aggregateWeatherData = async () => {
   );
 
   const alerts = [];
-  console.time("Find Threshold");
+
   const threshold = await Threshold.findOne();
-  console.timeEnd("Find Threshold");
   const alertThreshold = threshold ? threshold.value : 35;
 
   for (const city in summary) {

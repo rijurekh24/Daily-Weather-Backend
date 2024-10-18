@@ -13,12 +13,13 @@ app.use(cors());
 app.use(express.json());
 
 mongoose
-  .connect(process.env.DATABASE_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 20000,
-    socketTimeoutMS: 45000,
-  })
+  .connect(
+    "mongodb+srv://riju:1234@cluster0.a8cko.mongodb.net/Weather?retryWrites=true&w=majority&appName=Cluster0",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => {
     console.log("Connected to MongoDB");
   })
