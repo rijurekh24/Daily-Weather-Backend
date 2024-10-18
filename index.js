@@ -14,11 +14,7 @@ app.use(express.json());
 
 mongoose
   .connect(
-    "mongodb+srv://riju:1234@cluster0.a8cko.mongodb.net/Weather?retryWrites=true&w=majority&appName=Cluster0",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
+    "mongodb+srv://riju:1234@cluster0.a8cko.mongodb.net/Weather?retryWrites=true&w=majority&appName=Cluster0"
   )
   .then(() => {
     console.log("Connected to MongoDB");
