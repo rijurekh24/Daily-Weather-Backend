@@ -1,14 +1,17 @@
 import mongoose from "mongoose";
+
 const DailyWeatherSummary = mongoose.model(
   "DailyWeatherSummary",
   new mongoose.Schema({
-    city: String,
-    date: String,
-    averageTemp: Number,
-    maxTemp: Number,
-    minTemp: Number,
-    feelsLike: Number,
-    dominantCondition: String,
+    city: { type: String, required: true },
+    date: { type: String, required: true },
+    averageTemp: { type: Number, required: true },
+    maxTemp: { type: Number, required: true },
+    minTemp: { type: Number, required: true },
+    feelsLike: { type: Number, required: true },
+    averageHumidity: { type: Number, required: true }, //extra
+    averageWindSpeed: { type: Number, required: true }, // extra
+    dominantCondition: { type: String, required: true },
   })
 );
 

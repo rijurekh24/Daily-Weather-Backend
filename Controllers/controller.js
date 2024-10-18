@@ -3,7 +3,6 @@ import DailyWeatherSummary from "../Models/WeatherSummary.js";
 import axios from "axios";
 
 let weatherDataArray = [];
-let alertCounts = [];
 
 const fetchWeatherData = async () => {
   const cities = [
@@ -50,7 +49,6 @@ const fetchWeatherData = async () => {
 
 const aggregateWeatherData = async () => {
   const summary = {};
-  const alerts = [];
   console.log("Aggregating weather data...");
 
   weatherDataArray.forEach(({ date, temp, feelsLike, city }) => {
@@ -72,8 +70,9 @@ const aggregateWeatherData = async () => {
     summary[city].minTemp = Math.min(summary[city].minTemp, parseFloat(temp));
   });
 
-  const thresholdDoc = await Threshold.findOne();
-  const tempLimit = thresholdDoc ? thresholdDoc.value : 35;
+  const alerts = [];
+  const threshold = await Threshold.findOne();
+  const alertThreshold = threshold ? threshold.value : 35;
 
   for (const city in summary) {
     const { date, totalTemp, totalFeelsLike, count, maxTemp, minTemp } =
@@ -82,34 +81,26 @@ const aggregateWeatherData = async () => {
     const averageFeelsLike = totalFeelsLike / count;
 
     console.log(
-      `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Avg Feels Like: ${averageFeelsLike}, Max: ${maxTemp}, Min: ${minTemp}`
+      `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Max: ${maxTemp}, Min: ${minTemp}`
     );
 
-    const today = new Date().toISOString().split("T")[0];
-
-    if (maxTemp > tempLimit) {
+    if (averageTemp > alertThreshold) {
       alerts.push(
-        `ALERT: ${city} has exceeded the temperature threshold: ${maxTemp}°C`
+        `ALERT: ${city} has exceeded the temperature threshold: ${averageTemp}°C`
       );
     }
 
     try {
-      if (date === today) {
-        await DailyWeatherSummary.findOneAndUpdate(
-          { city, date },
-          { averageTemp, maxTemp, minTemp, feelsLike: averageFeelsLike },
-          { new: true, upsert: true }
-        );
-      } else {
-        await DailyWeatherSummary.create({
-          city,
-          date,
+      await DailyWeatherSummary.findOneAndUpdate(
+        { city, date },
+        {
           averageTemp,
           maxTemp,
           minTemp,
           feelsLike: averageFeelsLike,
-        });
-      }
+        },
+        { new: true, upsert: true }
+      );
     } catch (error) {
       console.error("Error saving weather summary:", error);
     }
