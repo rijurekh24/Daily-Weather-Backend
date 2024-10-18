@@ -25,14 +25,14 @@ This is the backend service for a weather application that fetches weather data 
 1. **Clone the repository:**
   ``` git clone https://github.com/yourusername/weather-app-backend.git```
    ```cd weather-app-backend```
-2.  **Install dependencies**
+2.  **Install dependencies:**
      ```npm install```
-3. **Set up environment variables**
+3. **Set up environment variables:**
      ```DATABASE_URL=mongodb+srv://username:password@cluster0.mongodb.net/Weather?retryWrites=true&w=majority```
 
-4. **Start the server**
+4. **Start the server:**
    ```npm start```
 
-5. **Access the API**
+5. **Access the API:**
  ```http://localhost:5000/api/weather```
 
