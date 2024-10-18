@@ -13,9 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 mongoose
-  .connect(
-    "mongodb+srv://riju:1234@cluster0.a8cko.mongodb.net/Weather?retryWrites=true&w=majority&appName=Cluster0"
-  )
+  .connect(process.env.DATABASE_URL)
   .then(() => {
     console.log("Connected to MongoDB");
   })
