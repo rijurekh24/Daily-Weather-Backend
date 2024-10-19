@@ -152,13 +152,14 @@ const aggregateWeatherData = async () => {
       conditions[a] > conditions[b] ? a : b
     );
 
-    console.log(
-      `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Max: ${maxTemp}, Min: ${minTemp}, Dominant Condition: ${dominantCondition}, Avg Wind Speed: ${averageWindSpeed}, Avg Humidity: ${averageHumidity}`
-    );
+    // console.log(
+    //   `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Max: ${maxTemp}, Min: ${minTemp}, Dominant Condition: ${dominantCondition}, Avg Wind Speed: ${averageWindSpeed}, Avg Humidity: ${averageHumidity}`
+    // );
 
     if (averageTemp > alertThreshold) {
+      let alertTemp = averageTemp.toFixed(2);
       alerts.push(
-        `ALERT: ${city} has exceeded the temperature threshold: ${averageTemp}°C`
+        `ALERT: ${city} has exceeded the temperature threshold: ${alertTemp}°C`
       );
     }
 
