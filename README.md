@@ -1,6 +1,9 @@
 # Weather Monitoring App Backend
 
-This is the backend service for a weather application that fetches weather data from the OpenWeatherMap API, aggregates the data, and allows users to set temperature thresholds for alerts. The backend is built using Node.js, Express, and MongoDB.
+This is the backend service for a weather application that fetches weather data from the OpenWeatherMap API, aggregates the data, and allows users to set temperature thresholds for alerts.
+
+## Tech Stack
+Node.js, Express, and MongoDB
 
 ## Features
 
