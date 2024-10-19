@@ -1,6 +1,9 @@
 # Weather Monitoring App Backend
 
-This is the backend service for a weather application that fetches weather data from the OpenWeatherMap API, aggregates the data, and allows users to set temperature thresholds for alerts. The backend is built using Node.js, Express, and MongoDB.
+This is the backend service for a weather application that fetches weather data from the OpenWeatherMap API, aggregates the data, and allows users to set temperature thresholds for alerts.
+
+## Tech Stack
+Node.js, Express, and MongoDB
 
 ## Features
 
@@ -25,7 +28,7 @@ This is the backend service for a weather application that fetches weather data 
 ## Installation
 
 1. **Clone the repository:**
-  ``` git clone https://github.com/yourusername/weather-app-backend.git```
+  ``` git clone https://github.com/rijurekh24/Daily-Weather-Backend.git```
    ```cd weather-app-backend```
 2.  **Install dependencies:**
      ```npm install```
@@ -35,8 +38,34 @@ This is the backend service for a weather application that fetches weather data 
 4. **Start the server:**
    ```npm start```
 
-5. **Access the API:**
- ```http://localhost:5000/api/weather```
- ```http://localhost:5000/api/threshold```
- ```http://localhost:5000/api/daily-summaries```
+5. ## Access the API
+
+### Development URLs
+- **Weather Data**:  
+  `http://localhost:5000/api/weather`  
+  Retrieves current weather data.
+
+- **Thresholds**:  
+  `http://localhost:5000/api/threshold`  
+  Retrieves configured thresholds for alerts.
+
+- **Daily Summaries**:  
+  `http://localhost:5000/api/daily-summaries`  
+  Retrieves daily weather summaries.
+
+---
+
+### Production URLs
+- **Weather Data**:  
+  `https://daily-weather-backend.onrender.com/api/weather`  
+  Retrieves current weather data.
+
+- **Thresholds**:  
+  `https://daily-weather-backend.onrender.com/api/threshold`  
+  Retrieves configured thresholds for alerts.
+
+- **Daily Summaries**:  
+  `https://daily-weather-backend.onrender.com/api/daily-summaries`  
+  Retrieves daily weather summaries.
+
 
