@@ -79,7 +79,7 @@ const aggregateWeatherData = async () => {
           totalFeelsLike: 0,
           totalWindSpeed: 0,
           totalHumidity: 0,
-          count: 1,
+          count: 0,
           maxTemp: parseFloat(temp),
           minTemp: parseFloat(temp),
           conditions: {},

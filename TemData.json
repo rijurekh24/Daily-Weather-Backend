@@ -2,7 +2,7 @@
   "Delhi": {
    "maxTempV": -100,
     "minTempV": 100,
-    "count": 0,
+    "count": 1,
     "totalTemp": 0,
     "totalFeelsLike": 0,
     "totalWindSpeed": 0,
@@ -11,7 +11,7 @@
   "Mumbai": {
     "maxTempV": -100,
     "minTempV": 100,
-    "count": 0,
+    "count": 1,
     "totalTemp": 0,
     "totalFeelsLike": 0,
     "totalWindSpeed": 0,
@@ -20,7 +20,7 @@
   "Chennai": {
    "maxTempV": -100,
     "minTempV": 100,
-    "count": 0,
+    "count": 1,
     "totalTemp": 0,
     "totalFeelsLike": 0,
     "totalWindSpeed": 0,
@@ -29,7 +29,7 @@
   "Bengaluru": {
    "maxTempV": -100,
     "minTempV": 100,
-    "count": 0,
+    "count": 1,
     "totalTemp": 0,
     "totalFeelsLike": 0,
     "totalWindSpeed": 0,
@@ -38,7 +38,7 @@
   "Kolkata": {
     "maxTempV": -100,
     "minTempV": 100,
-    "count": 0,
+    "count": 1,
     "totalTemp": 0,
     "totalFeelsLike": 0,
     "totalWindSpeed": 0,
@@ -47,7 +47,7 @@
   "Hyderabad": {
     "maxTempV": -100,
     "minTempV": 100,
-    "count": 0,
+    "count": 1,
     "totalTemp": 0,
     "totalFeelsLike": 0,
     "totalWindSpeed": 0,
