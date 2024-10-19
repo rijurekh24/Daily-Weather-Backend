@@ -79,7 +79,7 @@ const aggregateWeatherData = async () => {
           totalFeelsLike: 0,
           totalWindSpeed: 0,
           totalHumidity: 0,
-          count: 0,
+          count: 1,
           maxTemp: parseFloat(temp),
           minTemp: parseFloat(temp),
           conditions: {},
@@ -145,10 +145,10 @@ const aggregateWeatherData = async () => {
       currentTemp,
     } = summary[city];
 
-    const averageTemp = totalTemp / count;
-    const averageFeelsLike = totalFeelsLike / count;
-    const averageWindSpeed = totalWindSpeed / count;
-    const averageHumidity = totalHumidity / count;
+    const averageTemp = count > 0 ? totalTemp / count : 0;
+    const averageFeelsLike = count > 0 ? totalFeelsLike / count : 0;
+    const averageWindSpeed = count > 0 ? totalWindSpeed / count : 0;
+    const averageHumidity = count > 0 ? totalHumidity / count : 0;
 
     const dominantCondition = Object.keys(conditions).reduce((a, b) =>
       conditions[a] > conditions[b] ? a : b
