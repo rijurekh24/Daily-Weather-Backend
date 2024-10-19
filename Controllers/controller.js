@@ -34,23 +34,23 @@ const updateTemperatureData = (
   }
 
   const cityData = weatherData[city];
-  if (cityData.count == 289) {
-    cityData.count = 1;
-    cityData.totalTemp = newTemp;
+  //if (cityData.count == 289) {
+   // cityData.count = 1;
+   // cityData.totalTemp = newTemp;
 
-    cityData.totalWindSpeed = windSpeed;
-    cityData.totalHumidity = humidity;
-    cityData.maxTempV = newTemp;
-    cityData.minTempV = newTemp;
-  } else {
+   // cityData.totalWindSpeed = windSpeed;
+   // cityData.totalHumidity = humidity;
+  //cityData.maxTempV = newTemp;
+// cityData.minTempV = newTemp;
+ // } else {
     cityData.count++;
     cityData.totalTemp += newTemp;
 
     cityData.totalWindSpeed += windSpeed;
     cityData.totalHumidity += humidity;
-    cityData.maxTempV = newTemp;
-    cityData.minTempV = newTemp;
-  }
+   // cityData.maxTempV = newTemp;
+   // cityData.minTempV = newTemp;
+ // }
 
   // const averageTemp = cityData.totalTemp / cityData.count;
 
