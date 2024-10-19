@@ -1,0 +1,56 @@
+{
+  "Delhi": {
+    "maxTempV": 28.05,
+    "minTempV": 27.05,
+    "count": 7,
+    "totalTemp": 189.35000000000002,
+    "totalFeelsLike": 0,
+    "totalWindSpeed": 0,
+    "totalHumidity": 399
+  },
+  "Mumbai": {
+    "maxTempV": 24.99,
+    "minTempV": 23.99,
+    "count": 7,
+    "totalTemp": 167.93,
+    "totalFeelsLike": 0,
+    "totalWindSpeed": 17.99,
+    "totalHumidity": 616
+  },
+  "Chennai": {
+    "maxTempV": 28.76,
+    "minTempV": 28.41,
+    "count": 6,
+    "totalTemp": 171.6,
+    "totalFeelsLike": 0,
+    "totalWindSpeed": 16.080000000000002,
+    "totalHumidity": 534
+  },
+  "Bengaluru": {
+    "maxTempV": 21.53,
+    "minTempV": 21.37,
+    "count": 8,
+    "totalTemp": 172.24,
+    "totalFeelsLike": 0,
+    "totalWindSpeed": 12.32,
+    "totalHumidity": 752
+  },
+  "Kolkata": {
+    "maxTempV": 26.97,
+    "minTempV": 26.97,
+    "count": 8,
+    "totalTemp": 215.76,
+    "totalFeelsLike": 0,
+    "totalWindSpeed": 0,
+    "totalHumidity": 712
+  },
+  "Hyderabad": {
+    "maxTempV": 25.23,
+    "minTempV": 24.23,
+    "count": 6,
+    "totalTemp": 145.38,
+    "totalFeelsLike": 0,
+    "totalWindSpeed": 12.360000000000001,
+    "totalHumidity": 498
+  }
+}

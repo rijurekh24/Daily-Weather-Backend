@@ -1,13 +1,75 @@
 import Threshold from "../Models/Threshold.js";
 import DailyWeatherSummary from "../Models/WeatherSummary.js";
 import axios from "axios";
+import fs from "fs";
 
 let weatherDataArray = [];
+
+const jsonFilePath = "./TemData.json";
+
+const readJsonFromFile = (filePath) => {
+  try {
+    const data = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Error reading JSON file:", error);
+    throw error;
+  }
+};
+
+const writeJsonToFile = (filePath, json) => {
+  fs.writeFileSync(filePath, JSON.stringify(json, null, 2));
+};
+
+const updateTemperatureData = (
+  weatherData,
+  city,
+  newTemp,
+  windSpeed,
+  humidity
+) => {
+  if (!weatherData[city]) {
+    console.error(`City ${city} not found in the data.`);
+    return;
+  }
+
+  const cityData = weatherData[city];
+  if (cityData.count == 289) {
+    cityData.count = 1;
+    cityData.totalTemp = newTemp;
+
+    cityData.totalWindSpeed = windSpeed;
+    cityData.totalHumidity = humidity;
+    cityData.maxTempV = newTemp;
+    cityData.minTempV = newTemp;
+  } else {
+    cityData.count++;
+    cityData.totalTemp += newTemp;
+
+    cityData.totalWindSpeed += windSpeed;
+    cityData.totalHumidity += humidity;
+    cityData.maxTempV = newTemp;
+    cityData.minTempV = newTemp;
+  }
+
+  // const averageTemp = cityData.totalTemp / cityData.count;
+
+  if (newTemp > cityData.maxTempV) {
+    cityData.maxTempV = newTemp;
+  }
+  if (newTemp < cityData.minTempV) {
+    cityData.minTempV = newTemp;
+  }
+
+  console.log(`Updated data for ${city}:`, cityData);
+};
 
 const aggregateWeatherData = async () => {
   const summary = {};
   console.log("Aggregating weather data...");
 
+  let arrayOfMAxMin = readJsonFromFile(jsonFilePath);
+  console.log(arrayOfMAxMin);
   weatherDataArray.forEach(
     ({ date, temp, feelsLike, condition, city, windSpeed, humidity }) => {
       if (!summary[city]) {
@@ -18,19 +80,43 @@ const aggregateWeatherData = async () => {
           totalWindSpeed: 0,
           totalHumidity: 0,
           count: 0,
-          maxTemp: Number.MIN_VALUE,
-          minTemp: Number.MAX_VALUE,
+          maxTemp: parseFloat(temp),
+          minTemp: parseFloat(temp),
           conditions: {},
         };
       }
 
-      summary[city].totalTemp += parseFloat(temp);
-      summary[city].totalFeelsLike += parseFloat(feelsLike);
-      summary[city].totalWindSpeed += parseFloat(windSpeed);
-      summary[city].totalHumidity += parseFloat(humidity);
-      summary[city].count++;
-      summary[city].maxTemp = Math.max(summary[city].maxTemp, parseFloat(temp));
-      summary[city].minTemp = Math.min(summary[city].minTemp, parseFloat(temp));
+      summary[city].totalTemp = arrayOfMAxMin[city].totalTemp;
+      summary[city].totalFeelsLike = arrayOfMAxMin[city].totalFeelsLike;
+      summary[city].totalWindSpeed = arrayOfMAxMin[city].totalWindSpeed;
+      summary[city].totalHumidity = arrayOfMAxMin[city].totalHumidity;
+      summary[city].count = arrayOfMAxMin[city].count;
+
+      let a = arrayOfMAxMin[city];
+
+      let maxT = a.maxTempV;
+      let minT = a.minTempV;
+      summary[city].maxTemp = Math.max(maxT, parseFloat(temp));
+      summary[city].minTemp = Math.min(minT, parseFloat(temp));
+
+      updateTemperatureData(
+        arrayOfMAxMin,
+        city,
+        parseFloat(temp),
+        parseFloat(windSpeed),
+        parseFloat(humidity)
+      );
+
+      if (
+        summary[city].maxTemp !== parseFloat(temp) ||
+        summary[city].minTemp !== parseFloat(temp)
+      ) {
+        console.log("DIfferent", parseFloat(temp), city, summary);
+      }
+      arrayOfMAxMin[city].maxTempV = summary[city].maxTemp;
+      arrayOfMAxMin[city].minTempV = summary[city].minTemp;
+
+      writeJsonToFile(jsonFilePath, arrayOfMAxMin);
 
       if (!summary[city].conditions[condition]) {
         summary[city].conditions[condition] = 0;
@@ -143,7 +229,8 @@ const fetchWeatherData = async () => {
   });
 
   await Promise.all(fetchPromises);
-  console.log("Weather Data Array:", weatherDataArray);
+
+  await aggregateWeatherData();
 };
 
 const weather = async (req, res) => {
@@ -200,5 +287,9 @@ const dailySummaries = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+setInterval(() => {
+  fetchWeatherData();
+}, 5000);
 
 export { weather, thresold, dailySummaries, postthreshold };
