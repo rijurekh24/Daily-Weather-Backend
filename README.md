@@ -25,7 +25,7 @@ This is the backend service for a weather application that fetches weather data 
 ## Installation
 
 1. **Clone the repository:**
-  ``` git clone https://github.com/yourusername/weather-app-backend.git```
+  ``` git clone https://github.com/rijurekh24/Daily-Weather-Backend.git```
    ```cd weather-app-backend```
 2.  **Install dependencies:**
      ```npm install```
