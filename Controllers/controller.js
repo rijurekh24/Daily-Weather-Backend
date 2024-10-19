@@ -61,15 +61,15 @@ const updateTemperatureData = (
     cityData.minTempV = newTemp;
   }
 
-  console.log(`Updated data for ${city}:`, cityData);
+  // console.log(`Updated data for ${city}:`, cityData);
 };
 
 const aggregateWeatherData = async () => {
   const summary = {};
-  console.log("Aggregating weather data...");
+  // console.log("Aggregating weather data...");
 
   let arrayOfMAxMin = readJsonFromFile(jsonFilePath);
-  console.log(arrayOfMAxMin);
+  // console.log(arrayOfMAxMin);
   weatherDataArray.forEach(
     ({ date, temp, feelsLike, condition, city, windSpeed, humidity }) => {
       if (!summary[city]) {
@@ -83,6 +83,7 @@ const aggregateWeatherData = async () => {
           maxTemp: parseFloat(temp),
           minTemp: parseFloat(temp),
           conditions: {},
+          currentTemp: parseFloat(temp),
         };
       }
 
@@ -111,7 +112,7 @@ const aggregateWeatherData = async () => {
         summary[city].maxTemp !== parseFloat(temp) ||
         summary[city].minTemp !== parseFloat(temp)
       ) {
-        console.log("DIfferent", parseFloat(temp), city, summary);
+        // console.log("DIfferent", parseFloat(temp), city, summary);
       }
       arrayOfMAxMin[city].maxTempV = summary[city].maxTemp;
       arrayOfMAxMin[city].minTempV = summary[city].minTemp;
@@ -141,6 +142,7 @@ const aggregateWeatherData = async () => {
       maxTemp,
       minTemp,
       conditions,
+      currentTemp,
     } = summary[city];
 
     const averageTemp = totalTemp / count;
@@ -156,8 +158,9 @@ const aggregateWeatherData = async () => {
     //   `City: ${city}, Date: ${date}, Avg Temp: ${averageTemp}, Max: ${maxTemp}, Min: ${minTemp}, Dominant Condition: ${dominantCondition}, Avg Wind Speed: ${averageWindSpeed}, Avg Humidity: ${averageHumidity}`
     // );
 
-    if (averageTemp > alertThreshold) {
-      let alertTemp = averageTemp.toFixed(2);
+    if (currentTemp > alertThreshold) {
+      let alertTemp = currentTemp.toFixed(2);
+
       alerts.push(
         `ALERT: ${city} has exceeded the temperature threshold: ${alertTemp}°C`
       );
@@ -231,7 +234,7 @@ const fetchWeatherData = async () => {
 
   await Promise.all(fetchPromises);
 
-  await aggregateWeatherData();
+  // await aggregateWeatherData();
 };
 
 const weather = async (req, res) => {
@@ -279,9 +282,9 @@ const postthreshold = async (req, res) => {
 
 const dailySummaries = async (req, res) => {
   try {
-    console.log("Fetching daily summaries...");
+    // console.log("Fetching daily summaries...");
     const summaries = await DailyWeatherSummary.find();
-    console.log("Daily summaries fetched:", summaries);
+    // console.log("Daily summaries fetched:", summaries);
     res.json(summaries);
   } catch (error) {
     console.error("Error fetching daily summaries:", error);
@@ -291,6 +294,6 @@ const dailySummaries = async (req, res) => {
 
 setInterval(() => {
   fetchWeatherData();
-}, 5000);
+}, 3000000);
 
 export { weather, thresold, dailySummaries, postthreshold };

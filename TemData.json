@@ -1,56 +1,56 @@
 {
   "Delhi": {
-    "maxTempV": 28.05,
-    "minTempV": 26.05,
-    "count": 245,
-    "totalTemp": 6590.250000000028,
+   "maxTempV": -100,
+    "minTempV": 100,
+    "count": 0,
+    "totalTemp": 0,
     "totalFeelsLike": 0,
     "totalWindSpeed": 0,
-    "totalHumidity": 14113
+    "totalHumidity": 0
   },
   "Mumbai": {
-    "maxTempV": 24.99,
-    "minTempV": 23.99,
-    "count": 245,
-    "totalTemp": 5887.549999999966,
-    "totalFeelsLike": 0,
-    "totalWindSpeed": 639.9500000000008,
-    "totalHumidity": 21510
-  },
-  "Chennai": {
-    "maxTempV": 28.76,
-    "minTempV": 28.04,
-    "count": 244,
-    "totalTemp": 6901.11999999999,
-    "totalFeelsLike": 0,
-    "totalWindSpeed": 468.9999999999971,
-    "totalHumidity": 21992
-  },
-  "Bengaluru": {
-    "maxTempV": 21.53,
-    "minTempV": 21.37,
-    "count": 246,
-    "totalTemp": 5296.380000000003,
-    "totalFeelsLike": 0,
-    "totalWindSpeed": 378.8400000000012,
-    "totalHumidity": 23124
-  },
-  "Kolkata": {
-    "maxTempV": 26.97,
-    "minTempV": 26.97,
-    "count": 246,
-    "totalTemp": 6634.620000000011,
+    "maxTempV": -100,
+    "minTempV": 100,
+    "count": 0,
+    "totalTemp": 0,
     "totalFeelsLike": 0,
     "totalWindSpeed": 0,
-    "totalHumidity": 21894
+    "totalHumidity": 0
+  },
+  "Chennai": {
+   "maxTempV": -100,
+    "minTempV": 100,
+    "count": 0,
+    "totalTemp": 0,
+    "totalFeelsLike": 0,
+    "totalWindSpeed": 0,
+    "totalHumidity": 0
+  },
+  "Bengaluru": {
+   "maxTempV": -100,
+    "minTempV": 100,
+    "count": 0,
+    "totalTemp": 0,
+    "totalFeelsLike": 0,
+    "totalWindSpeed": 0,
+    "totalHumidity": 0
+  },
+  "Kolkata": {
+    "maxTempV": -100,
+    "minTempV": 100,
+    "count": 0,
+    "totalTemp": 0,
+    "totalFeelsLike": 0,
+    "totalWindSpeed": 0,
+    "totalHumidity": 0
   },
   "Hyderabad": {
-    "maxTempV": 25.23,
-    "minTempV": 24.23,
-    "count": 244,
-    "totalTemp": 6049.119999999969,
+    "maxTempV": -100,
+    "minTempV": 100,
+    "count": 0,
+    "totalTemp": 0,
     "totalFeelsLike": 0,
-    "totalWindSpeed": 502.6400000000005,
-    "totalHumidity": 20252
+    "totalWindSpeed": 0,
+    "totalHumidity": 0
   }
 }
