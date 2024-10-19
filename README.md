@@ -38,8 +38,34 @@ Node.js, Express, and MongoDB
 4. **Start the server:**
    ```npm start```
 
-5. **Access the API:**
- ```http://localhost:5000/api/weather``` ```https://daily-weather-backend.onrender.com/api/weather```
- ```http://localhost:5000/api/threshold``` ```https://daily-weather-backend.onrender.com/api/threshold```
- ```http://localhost:5000/api/daily-summaries```  ```https://daily-weather-backend.onrender.com/api/daily-summaries```
+5. ## Access the API
+
+### Development URLs
+- **Weather Data**:  
+  `http://localhost:5000/api/weather`  
+  Retrieves current weather data.
+
+- **Thresholds**:  
+  `http://localhost:5000/api/threshold`  
+  Retrieves configured thresholds for alerts.
+
+- **Daily Summaries**:  
+  `http://localhost:5000/api/daily-summaries`  
+  Retrieves daily weather summaries.
+
+---
+
+### Production URLs
+- **Weather Data**:  
+  `https://daily-weather-backend.onrender.com/api/weather`  
+  Retrieves current weather data.
+
+- **Thresholds**:  
+  `https://daily-weather-backend.onrender.com/api/threshold`  
+  Retrieves configured thresholds for alerts.
+
+- **Daily Summaries**:  
+  `https://daily-weather-backend.onrender.com/api/daily-summaries`  
+  Retrieves daily weather summaries.
+
 
