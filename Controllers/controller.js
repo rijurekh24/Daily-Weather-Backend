@@ -145,10 +145,10 @@ const aggregateWeatherData = async () => {
       currentTemp,
     } = summary[city];
 
-    const averageTemp = count > 0 ? totalTemp / count : 0;
-    const averageFeelsLike = count > 0 ? totalFeelsLike / count : 0;
-    const averageWindSpeed = count > 0 ? totalWindSpeed / count : 0;
-    const averageHumidity = count > 0 ? totalHumidity / count : 0;
+    const averageTemp = totalTemp / count;
+    const averageFeelsLike = totalFeelsLike / count;
+    const averageWindSpeed = totalWindSpeed / count;
+    const averageHumidity = totalHumidity / count;
 
     const dominantCondition = Object.keys(conditions).reduce((a, b) =>
       conditions[a] > conditions[b] ? a : b
@@ -294,6 +294,6 @@ const dailySummaries = async (req, res) => {
 
 setInterval(() => {
   fetchWeatherData();
-}, 3000000);
+}, 300000);
 
 export { weather, thresold, dailySummaries, postthreshold };
